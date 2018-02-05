@@ -22,19 +22,17 @@ let generateCard x=
 
 let rng = new System.Random()
 
-let Shuffle (org:_[]) = 
-    let arr = Array.copy org
-    let max = (arr.Length - 1)
-    let randomSwap (arr:_[]) i =
-        let pos = rng.Next(max)
-        let tmp = arr.[pos]
-        arr.[pos] <- arr.[i]
-        arr.[i] <- tmp
-        arr
-   
-    [|0..max|] |> Array.fold randomSwap arr
+let swap (a: _[]) x y =
+    let tmp = a.[x]
+    a.[x] <- a.[y]
+    a.[y] <- tmp
 
-let generateCards=[|0..51|] |>Array.map generateCard|>Shuffle|>Shuffle|>Shuffle
+let shuffle a =
+    Array.iteri (fun i _ -> swap a i (rng.Next(i, Array.length a))) a
+    a
+
+
+let generateCards=[|0..51|] |>Array.map generateCard|>shuffle|>Array.toList
 let generateTrump=
     let trumpNr=rng.Next(3)
     match trumpNr with
@@ -44,33 +42,17 @@ let generateTrump=
               |_-> Diamond
 
 
-let formPointStack (first:Card[]) (second:Card[]) (trump:CardSuit)=
 
-    let firstPlayerWonCards=
-        second 
-        |>Array.zip first 
-        |>Array.filter (fun (x, y) ->x.Suit=trump&&y.Suit<>trump||(x.Value>y.Value&&((x.Suit<>trump&&y.Suit<>trump)||(x.Suit=trump&&y.Suit=trump))))
-        |>Array.collect (fun (x, y) -> [|x;y|])
-
-
-    let firstPlayerDrawCards=
-         second
-         |> Array.zip first
-         |> Array.filter (fun (x,y)->(x.Suit<>trump&&y.Suit<>trump||x.Suit=trump&&y.Suit=trump)&&x.Value=y.Value)
-         |> Array.map (fun (x,y)-> x)
-
-    Array.append firstPlayerWonCards firstPlayerDrawCards
-
-let formPointStack2 (first:Card[]) (second:Card[]) (trump:CardSuit)=
+let formPointStack (first:Card list) (second:Card list) (trump:CardSuit)=
 
         second 
-        |>Array.zip first 
-        |>Array.filter (fun (x, y) ->x.Suit=trump&&y.Suit<>trump||(x.Value>y.Value&&((x.Suit<>trump&&y.Suit<>trump)||(x.Suit=trump&&y.Suit=trump))))
-        |>Array.collect (fun (x, y) -> [|x;y|])
-        |>Array.append (second
-         |> Array.zip first
-         |> Array.filter (fun (x,y)->(x.Suit<>trump&&y.Suit<>trump||x.Suit=trump&&y.Suit=trump)&&x.Value=y.Value)
-         |> Array.map (fun (x,y)-> x))
+        |>List.zip first 
+        |>List.filter (fun (x, y) ->x.Suit=trump&&y.Suit<>trump||(x.Value>y.Value&&((x.Suit<>trump&&y.Suit<>trump)||(x.Suit=trump&&y.Suit=trump))))
+        |>List.collect (fun (x, y) -> [x;y])
+        |>List.append (second
+         |> List.zip first
+         |> List.filter (fun (x,y)->(x.Suit<>trump&&y.Suit<>trump||x.Suit=trump&&y.Suit=trump)&&x.Value=y.Value)
+         |> List.map (fun (x,y)-> x))
          
 
 
@@ -79,10 +61,10 @@ let main argv =
     printfn "%A" argv
     let trump=generateTrump
     printfn "Trump suit: %A" trump
-    let (first,second)=generateCards |> Array.splitAt 26
+    let (first,second)=generateCards |> List.splitAt 26
     printfn "First player pile: %A" first
     printfn "Second player pile: %A" second
-    let firstPlayerPileAfterGame= formPointStack2 first second trump
+    let firstPlayerPileAfterGame= formPointStack first second trump
     let secondPlayerPileAfterGame= formPointStack second first trump
     printfn "First player pile after the game: %A" firstPlayerPileAfterGame
     printfn "Second player pile after the game: %A" secondPlayerPileAfterGame
