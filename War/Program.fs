@@ -17,7 +17,7 @@ let generateCard x=
      |2-> Heart
      |_-> Diamond
            
-    let card = {Suit=suit;Value=x/4+2}
+    let card = {Suit=suit;Value=x/4%13+2}
     card
 
 let rng = new System.Random()
@@ -86,7 +86,6 @@ let main argv =
     let secondPlayerPileAfterGame= formPointStack second first trump
     printfn "First player pile after the game: %A" firstPlayerPileAfterGame
     printfn "Second player pile after the game: %A" secondPlayerPileAfterGame
-
     printfn "Total score"
     printfn "P1: %d  P2:%d"firstPlayerPileAfterGame.Length secondPlayerPileAfterGame.Length
     System.Console.ReadKey() |> ignore
