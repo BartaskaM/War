@@ -72,10 +72,6 @@ let formPointStack2 (first:Card[]) (second:Card[]) (trump:CardSuit)=
          |> Array.filter (fun (x,y)->(x.Suit<>trump&&y.Suit<>trump||x.Suit=trump&&y.Suit=trump)&&x.Value=y.Value)
          |> Array.map (fun (x,y)-> x))
          
-         
-    
-
-
 
 
 [<EntryPoint>]
@@ -93,7 +89,6 @@ let main argv =
 
     printfn "Total score"
     printfn "P1: %d  P2:%d"firstPlayerPileAfterGame.Length secondPlayerPileAfterGame.Length
-    printfn "Total: %d" (firstPlayerPileAfterGame.Length + secondPlayerPileAfterGame.Length)
     System.Console.ReadKey() |> ignore
     
     0 // return an integer exit code
