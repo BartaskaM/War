@@ -1,0 +1,9 @@
+D:\War\War\War\bin\Debug\War.exe.config
+D:\War\War\War\bin\Debug\War.XML
+D:\War\War\War\bin\Debug\War.exe
+D:\War\War\War\bin\Debug\War.pdb
+D:\War\War\War\bin\Debug\FSharp.Core.dll
+D:\War\War\War\bin\Debug\System.ValueTuple.dll
+D:\War\War\War\bin\Debug\FSharp.Core.xml
+D:\War\War\War\obj\Debug\War.exe
+D:\War\War\War\obj\Debug\War.pdb
