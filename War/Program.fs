@@ -42,12 +42,20 @@ let generateTrump=
               |_-> Diamond
 
 
+let compareByValue (first: Card) (second: Card) (trump: CardSuit)=
+        if (first.Suit=trump&&second.Suit=trump||second.Suit<>trump) then
+            if(first.Value>second.Value) then
+                true
+                    else
+                false
+        else
+            false 
 
 let formPointStack (first:Card list) (second:Card list) (trump:CardSuit)=
 
         second 
         |>List.zip first 
-        |>List.filter (fun (x, y) ->x.Suit=trump&&y.Suit<>trump||(x.Value>y.Value&&((x.Suit<>trump&&y.Suit<>trump)||(x.Suit=trump&&y.Suit=trump))))
+        |>List.filter (fun (x, y) ->x.Suit=trump&&y.Suit<>trump||compareByValue x y trump)
         |>List.collect (fun (x, y) -> [x;y])
         |>List.append (second
          |> List.zip first
