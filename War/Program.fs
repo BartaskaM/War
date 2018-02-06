@@ -8,7 +8,17 @@ type CardSuit=
 |Heart
 |Diamond
 
-type Card={Suit: CardSuit;Value: int}
+
+type Card(suit:CardSuit,value:int)=
+    do
+        if value>12 then
+            invalidArg "value" "Invalid card value"
+    
+    member this.Suit=suit
+    member this.Value=value
+    override this.ToString()= sprintf "{Suit: %A; Value: %i;}" this.Suit this.Value
+
+    
 let generateCard x= 
     let suit=
      match x%4 with
@@ -17,7 +27,7 @@ let generateCard x=
      |2-> Heart
      |_-> Diamond
            
-    let card = {Suit=suit;Value=x/4%13+2}
+    let card = Card(suit,x/4%13)
     card
 
 let rng = new System.Random()
@@ -46,8 +56,10 @@ let formPointStack (first:Card list) (second:Card list) (trump:CardSuit)=
         second 
         |>List.zip first 
         |>List.choose(fun (x,y) ->
-          if(x.Suit=trump&&y.Suit<>trump||compareByValue x y trump) then Some [x;y]
-          elif((x.Suit<>trump&&y.Suit<>trump||x.Suit=trump&&y.Suit=trump)&&x.Value=y.Value) then Some [x] 
+          if(x.Suit=trump&&y.Suit<>trump||compareByValue x y trump) 
+          then Some [x;y]
+          elif((x.Suit<>trump&&y.Suit<>trump||x.Suit=trump&&y.Suit=trump)&&x.Value=y.Value) 
+          then Some [x] 
           else
             None
         )
@@ -71,6 +83,5 @@ let main argv =
     printfn "Total score"
     printfn "P1: %d  P2:%d"firstPlayerPileAfterGame.Length secondPlayerPileAfterGame.Length
     System.Console.ReadKey() |> ignore
-    
     0 // return an integer exit code
 
