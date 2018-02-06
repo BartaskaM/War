@@ -22,17 +22,7 @@ let generateCard x=
 
 let rng = new System.Random()
 
-let swap (a: _[]) x y =
-    let tmp = a.[x]
-    a.[x] <- a.[y]
-    a.[y] <- tmp
-
-let shuffle a =
-    Array.iteri (fun i _ -> swap a i (rng.Next(i, Array.length a))) a
-    a
-
-
-let generateCards=[|0..51|] |>Array.map generateCard|>shuffle|>Array.toList
+let generateCards=[0..51] |>List.map generateCard|>List.sortBy(fun _->rng.Next())
 let generateTrump=
     let trumpNr=rng.Next(3)
     match trumpNr with
@@ -55,12 +45,14 @@ let formPointStack (first:Card list) (second:Card list) (trump:CardSuit)=
 
         second 
         |>List.zip first 
-        |>List.filter (fun (x, y) ->x.Suit=trump&&y.Suit<>trump||compareByValue x y trump)
-        |>List.collect (fun (x, y) -> [x;y])
-        |>List.append (second
-         |> List.zip first
-         |> List.filter (fun (x,y)->(x.Suit<>trump&&y.Suit<>trump||x.Suit=trump&&y.Suit=trump)&&x.Value=y.Value)
-         |> List.map (fun (x,y)-> x))
+        |>List.choose(fun (x,y) ->
+          if(x.Suit=trump&&y.Suit<>trump||compareByValue x y trump) then Some [x;y]
+          elif((x.Suit<>trump&&y.Suit<>trump||x.Suit=trump&&y.Suit=trump)&&x.Value=y.Value) then Some [x] 
+          else
+            None
+        )
+        |>List.concat
+        
          
 
 
