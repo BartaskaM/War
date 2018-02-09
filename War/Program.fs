@@ -1,6 +1,31 @@
 ﻿// Learn more about F# at http://fsharp.org
 // See the 'F# Tutorial' project for more help.
 
+//type Rank =
+//        /// Represents the rank of cards 2 .. 10
+//        | Value of int 
+//        | Ace
+//        | King
+//        | Queen
+//        | Jack
+
+type Rank = 
+    Two | Three | Four | Five | Six | Seven | Eight | Nine | Ten | Jack | Queen | King | Ace
+    member this.ToInt() =
+        match this with
+        | Two -> 2
+        | Three -> 3
+        | Four -> 4
+        | Five -> 5
+        | Six -> 6
+        | Seven -> 7
+        | Eight -> 8
+        | Nine -> 9
+        | Ten -> 10
+        | Jack -> 11
+        | Queen -> 12
+        | King -> 13
+        | Ace -> 14
 
 type CardSuit=
 |Spade
@@ -8,16 +33,7 @@ type CardSuit=
 |Heart
 |Diamond
 
-
-type Card(suit:CardSuit,value:int)=
-    //do
-    //    if value>12 then
-    //        invalidArg "value" "Invalid card value"
-    
-    member this.Suit=suit
-    member this.Value=value%13
-    override this.ToString()= sprintf "{Suit: %A; Value: %i;}" this.Suit (this.Value+2)
-
+type Card={Suit:CardSuit;Value:Rank}
     
 let generateCard x= 
     let suit=
@@ -26,8 +42,25 @@ let generateCard x=
      |1-> Club
      |2-> Heart
      |_-> Diamond
-           
-    let card = Card(suit,x/4%13)
+     
+    let value=
+        match (x/4%13) with
+        |0->Two
+        |1->Three
+        |2->Four
+        |3->Five
+        |4->Six
+        |5->Seven
+        |6->Eight
+        |7->Nine
+        |8->Ten
+        |9->Jack
+        |10->Queen
+        |11->King
+        |_->Ace
+        
+         
+    let card = {Suit=suit;Value=value}
     card
 
 let rng = new System.Random()
@@ -44,43 +77,31 @@ let generateTrump=
 
 let compareByValue (first: Card) (second: Card) (trump: CardSuit)=
         if (first.Suit=trump&&second.Suit=trump||second.Suit<>trump) then
-            if(first.Value>second.Value) then
+            if(first.Value.ToInt()>second.Value.ToInt()) then
                 true
                     else
                 false
         else
             false 
 
-let formPointStack (first:Card list) (second:Card list) (trump:CardSuit)=
-        let bothPiles=second
-                        |>List.zip first 
-                        |>List.choose(fun (x,y) ->
-                            if(x.Suit=trump&&y.Suit<>trump||compareByValue x y trump) 
-                            then Some [(0,x);(0,y)]
-                            elif((x.Suit<>trump&&y.Suit<>trump||x.Suit=trump&&y.Suit=trump)&&x.Value=y.Value) 
-                            then Some [(0,x);(1,y)] 
+
+let compareCards (first:Card) (second:Card) (trump:CardSuit)=
+    if(first.Suit=trump&&second.Suit<>trump||compareByValue first second trump) 
+                            then [first;second],[]
+                            elif((first.Suit<>trump&&second.Suit<>trump||first.Suit=trump&&second.Suit=trump)&&first.Value.ToInt()=second.Value.ToInt()) 
+                            then [first],[second]
                             else
-                            Some[(1,x);(1,y)]
-                        )
-                        |>List.concat
-                        |>List.groupBy(fun (x,y)->x)
-                        
-        let firstPlayerPile=bothPiles
-                            |>List.filter(fun (x,y)->x=0)
-                            |>List.map(fun (x,y)->y)
-                            |>List.concat
-                            |>List.map(fun (x,y)->y)
+                            [],[first;second]
 
-        let secondPlayerPile=bothPiles
-                            |>List.filter(fun (x,y)->x=1)
-                            |>List.map(fun (x,y)->y)       
-                            |>List.concat
-                            |>List.map(fun (x,y)->y)
+let formPointStack (first:Card list) (second:Card list) (trump:CardSuit)=
+        let (firstPlayerPile,secondPlayerPile)=second
+                                                |>List.zip first
+                                                |>List.map(fun (x,y)->compareCards x y trump)
+                                                |>List.unzip                                         
 
-        firstPlayerPile,secondPlayerPile
+        (firstPlayerPile|>List.concat),(secondPlayerPile|>List.concat)
         
          
-
 
 [<EntryPoint>]
 let main argv = 
