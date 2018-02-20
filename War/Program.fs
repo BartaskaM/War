@@ -78,11 +78,11 @@ let generateTrump=
 let compareByValue (first: Card) (second: Card) (trump: CardSuit)=
         if (first.Suit = trump && second.Suit = trump || second.Suit <> trump) then
             if(first.Value.ToInt()>second.Value.ToInt()) then
-                true
-                    else
-                false
+              true
+             else
+              false
         else
-            false 
+         false 
 
 
 let formRoundOutcome (first:Card) (second:Card) (trump:CardSuit)=
