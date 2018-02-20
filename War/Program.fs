@@ -76,7 +76,7 @@ let generateTrump=
 
 
 let compareByValue (first: Card) (second: Card) (trump: CardSuit)=
-        if (first.Suit=trump&&second.Suit=trump||second.Suit<>trump) then
+        if (first.Suit = trump && second.Suit = trump || second.Suit <> trump) then
             if(first.Value.ToInt()>second.Value.ToInt()) then
                 true
                     else
@@ -85,10 +85,10 @@ let compareByValue (first: Card) (second: Card) (trump: CardSuit)=
             false 
 
 
-let compareCards (first:Card) (second:Card) (trump:CardSuit)=
-    if(first.Suit=trump&&second.Suit<>trump||compareByValue first second trump) 
+let formRoundOutcome (first:Card) (second:Card) (trump:CardSuit)=
+    if(first.Suit = trump && second.Suit <> trump || compareByValue first second trump) 
                             then [first;second],[]
-                            elif((first.Suit<>trump&&second.Suit<>trump||first.Suit=trump&&second.Suit=trump)&&first.Value.ToInt()=second.Value.ToInt()) 
+                            elif((first.Suit <> trump && second.Suit <> trump || first.Suit = trump && second.Suit = trump) && first.Value.ToInt() = second.Value.ToInt()) 
                             then [first],[second]
                             else
                             [],[first;second]
@@ -96,7 +96,7 @@ let compareCards (first:Card) (second:Card) (trump:CardSuit)=
 let formPointStack (first:Card list) (second:Card list) (trump:CardSuit)=
         let (firstPlayerPile,secondPlayerPile)=second
                                                 |>List.zip first
-                                                |>List.map(fun (x,y)->compareCards x y trump)
+                                                |>List.map(fun (x,y)->formRoundOutcome x y trump)
                                                 |>List.unzip                                         
 
         (firstPlayerPile|>List.concat),(secondPlayerPile|>List.concat)
