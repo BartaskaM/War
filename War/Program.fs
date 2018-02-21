@@ -75,7 +75,7 @@ let generateTrump=
               |_-> Diamond
 
 
-let compareByValue (first: Card) (second: Card) (trump: CardSuit)=
+let isFirstCardValueGreater (first: Card) (second: Card) (trump: CardSuit)=
         if (first.Suit = trump && second.Suit = trump || second.Suit <> trump) then
             if(first.Value.ToInt()>second.Value.ToInt()) then
               true
@@ -84,11 +84,33 @@ let compareByValue (first: Card) (second: Card) (trump: CardSuit)=
         else
          false 
 
+let areBothTrump (first: Card) (second: Card) (trump: CardSuit)=
+    if(first.Suit = trump && second.Suit = trump) then
+     true
+    else
+     false
 
+let areBothNotTrump (first: Card) (second: Card) (trump: CardSuit)=
+    if(first.Suit <> trump && second.Suit <> trump) then
+     true
+    else
+     false
+
+let isFirstCardWinningByTrump (first: Card) (second: Card) (trump: CardSuit)=
+    if(first.Suit = trump && second.Suit <> trump) then
+     true
+    else
+     false
+
+let areCardValuesEqual (first: Card) (second: Card)=
+    if(first.Value.ToInt() = second.Value.ToInt()) then
+     true
+    else
+     false
 let formRoundOutcome (first:Card) (second:Card) (trump:CardSuit)=
-    if(first.Suit = trump && second.Suit <> trump || compareByValue first second trump) 
+    if(isFirstCardWinningByTrump first second trump || isFirstCardValueGreater first second trump) 
                             then [first;second],[]
-                            elif((first.Suit <> trump && second.Suit <> trump || first.Suit = trump && second.Suit = trump) && first.Value.ToInt() = second.Value.ToInt()) 
+                            elif((areBothNotTrump first second trump || areBothTrump first second trump) && areCardValuesEqual first second) 
                             then [first],[second]
                             else
                             [],[first;second]
